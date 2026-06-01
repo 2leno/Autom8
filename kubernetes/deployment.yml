@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: autom8-app
+  namespace: default
+  labels:
+    app: autom8
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: autom8
+  template:
+    metadata:
+      labels:
+        app: autom8
+    spec:
+      containers:
+      - name: autom8-container
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
