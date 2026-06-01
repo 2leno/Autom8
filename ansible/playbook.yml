@@ -1,0 +1,36 @@
+---
+- name: Autom8 - Configuration des serveurs
+  hosts: all
+  become: yes
+  tasks:
+    - name: Mise à jour du cache apt
+      apt:
+        update_cache: yes
+
+    - name: Installation de Docker
+      apt:
+        name: docker.io
+        state: present
+
+    - name: Démarrage du service Docker
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Installation de Git
+      apt:
+        name: git
+        state: present
+
+    - name: Clonage du dépôt Autom8
+      git:
+        repo: https://github.com/2leno/Autom8.git
+        dest: /opt/autom8
+        version: Leno
+
+    - name: Copie des scripts
+      copy:
+        src: /opt/autom8/linux/
+        dest: /usr/local/bin/
+        mode: '0755'
