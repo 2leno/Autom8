@@ -1,0 +1,40 @@
+name: CI - Autom8
+
+on:
+  push:
+    branches: [ Leno ]
+  pull_request:
+    branches: [ Leno ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Vérification des scripts bash
+      run: |
+        for script in linux/*.sh; do
+          bash -n "$script"
+          echo "✅ $script est valide"
+        done
+
+    - name: Vérification du Dockerfile
+      run: |
+        docker build -t autom8-test ./docker/
+        echo "✅ Dockerfile valide"
+
+    - name: Vérification du docker-compose
+      run: |
+        docker-compose -f docker/docker-compose.yml config
+        echo "✅ docker-compose valide"
+
+    - name: Vérification des fichiers YAML
+      run: |
+        for yaml in kubernetes/*.yml monitoring/*.yml; do
+          if [ -f "$yaml" ]; then
+            cat "$yaml" | python -c "import sys, yaml; yaml.safe_load(sys.stdin)"
+            echo "✅ $yaml est valide"
+          fi
+        done
